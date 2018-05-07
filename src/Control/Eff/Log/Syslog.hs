@@ -1,18 +1,38 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Control.Eff.Log.Syslog where
+module Control.Eff.Log.Syslog ( SyslogMsg(..)
+                              , syslogLogger
+                              , runSyslog
+                              , logSyslog
+                              , logDebug
+                              , logInfo
+                              , logNotice
+                              , logWarning
+                              , logError
+                              , logCritical
+                              , logAlert
+                              , logEmergency
+                              -- Re-exports from hsyslog
+                              , Priority(..)
+                              , Option(..)
+                              , Facility(..)
+                              ) where
 
 import Control.Eff
 import Control.Eff.Lift
 import Control.Eff.Log
 import Control.Monad.Base (MonadBase,liftBase)
+import Control.Monad.Trans.Control (MonadBaseControl, liftBaseOp_)
 import Data.ByteString (ByteString)
 import Data.ByteString.Char8 (pack)
 import Data.ByteString.Unsafe (unsafeUseAsCStringLen)
 import Data.Char (toLower)
 import Data.Monoid (mconcat)
-import System.Posix.Syslog (Priority(..), syslog)
+import System.Posix.Syslog (Priority(..), Option(..), Facility(..), syslog, withSyslog)
 
+-- | Message type that contains priority and message text.
 data SyslogMsg = SyslogMsg Priority ByteString
 
 instance LogMessage SyslogMsg where
@@ -24,9 +44,23 @@ instance LogMessage SyslogMsg where
                                   , s
                                   ]
 
+-- | Syslog Logger
 syslogLogger :: MonadBase IO m => Logger m SyslogMsg
 syslogLogger (SyslogMsg p s) = liftBase $ unsafeUseAsCStringLen s $ syslog Nothing p
 
+-- | Wrapper around 'runLogM' and 'withSyslog'
+runSyslog :: ( MonadBase IO m
+             , MonadBaseControl IO (Eff r)
+             , Lifted m r
+             ) => String   -- ^ Syslog ident
+               -> [Option] -- ^ Syslog options
+               -> Facility -- ^ Syslog facility
+               -> Eff (LogM m SyslogMsg ': r) a -> Eff r a
+runSyslog idn opts fac = w . runLogM syslogLogger
+  where
+    w = liftBaseOp_ (withSyslog idn opts fac)
+
+-- | Log some text to syslog
 logSyslog :: ( LogMessage l
              , MonadBase IO m
              , Member (LogM m SyslogMsg) r
