@@ -41,8 +41,7 @@ packages:
 # (e.g., acme-missiles-0.3)
 extra-deps:
   - extensible-effects-2.6.0.1
-  - git: https://github.com/greydot/log-effect.git
-    commit: f22eb3a20c89a43890b068dc9966b8210733592b
+  - log-effect-1.0.0
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
