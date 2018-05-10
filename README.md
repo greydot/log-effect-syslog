@@ -2,8 +2,8 @@
 
 This package contains a set of utility functions that provide ability to log to
 syslog using
-(extensible-effects)[https://hackage.haskell.org/package/extensible-effects]
-and (log-effect)[https://hackage.haskell.org/package/log-effect].
+[extensible-effects](https://hackage.haskell.org/package/extensible-effects)
+and [log-effect](https://hackage.haskell.org/package/log-effect).
 
 ## Example
 
