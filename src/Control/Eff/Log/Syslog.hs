@@ -5,6 +5,8 @@
 module Control.Eff.Log.Syslog ( SyslogMsg(..)
                               , syslogLogger
                               , runSyslog
+                              , getLogMask
+                              , setLogMask
                               , logSyslog
                               , logDebug
                               , logInfo
@@ -23,6 +25,7 @@ module Control.Eff.Log.Syslog ( SyslogMsg(..)
 import Control.Eff
 import Control.Eff.Lift
 import Control.Eff.Log
+import Control.Monad (void)
 import Control.Monad.Base (MonadBase,liftBase)
 import Control.Monad.Trans.Control (MonadBaseControl, liftBaseOp_)
 import Data.ByteString (ByteString)
@@ -30,7 +33,7 @@ import Data.ByteString.Char8 (pack)
 import Data.ByteString.Unsafe (unsafeUseAsCStringLen)
 import Data.Char (toLower)
 import Data.Monoid (mconcat)
-import System.Posix.Syslog (Priority(..), Option(..), Facility(..), syslog, withSyslog)
+import System.Posix.Syslog (Priority(..), Option(..), Facility(..), syslog, withSyslog, setlogmask)
 
 -- | Message type that contains priority and message text.
 data SyslogMsg = SyslogMsg Priority ByteString
@@ -59,6 +62,16 @@ runSyslog :: ( MonadBase IO m
 runSyslog idn opts fac = w . runLogM syslogLogger
   where
     w = liftBaseOp_ (withSyslog idn opts fac)
+
+-- | Get syslog log mask.
+--   Implemented as a wrapper around hsyslog's 'setlogmask'
+getLogMask :: MonadBase IO m => m [Priority]
+getLogMask = liftBase $ setlogmask []
+
+-- | Set syslog log mask
+--   Implemented as a wrapper around hsyslog's 'setlogmask'
+setLogMask :: MonadBase IO m => [Priority] -> m ()
+setLogMask = liftBase . void . setlogmask
 
 -- | Log some text to syslog
 logSyslog :: ( LogMessage l
