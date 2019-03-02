@@ -19,11 +19,11 @@ extra-source-files:  README.md
 library
   exposed-modules:     Control.Eff.Log.Syslog
   build-depends:       base >=4.9 && <5.0,
-                       bytestring >= 0.10,
-                       extensible-effects >= 2.6.0.0,
+                       bytestring >= 0.10 && < 0.11,
+                       extensible-effects >= 5.0.0.0 && < 5.1.0.0,
                        hsyslog == 5.*,
-                       log-effect >= 1.0.0,
-                       monad-control >= 1.0,
+                       log-effect >= 1.2.0 && < 1.3.0,
+                       monad-control >= 1.0 && < 1.1,
                        transformers-base
   hs-source-dirs:      src
   default-language:    Haskell2010

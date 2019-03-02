@@ -23,7 +23,6 @@ module Control.Eff.Log.Syslog ( SyslogMsg(..)
                               ) where
 
 import Control.Eff
-import Control.Eff.Lift
 import Control.Eff.Log
 import Control.Monad (void)
 import Control.Monad.Base (MonadBase,liftBase)
