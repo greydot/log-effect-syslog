@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                log-effect-syslog
-version:             0.1.0
+version:             0.2.0
 synopsis:            Syslog functions for log-effect
 description:         Utility functions for combining log-effect and syslog
 homepage:            https://github.com/greydot/log-effect-syslog
